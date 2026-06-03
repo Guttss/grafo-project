@@ -1,16 +1,75 @@
 package entities;
 
+
 public class AlgoritmoDijkstra {
 
-    public void relaxa(Grafo g, int[] d, int[] p, int u, int v){
+    public void relaxa(Grafo g, int[] d, int[] p, int u, int v) {
 
         int pesoAresta = g.getPeso(u, v);
 
-        if(pesoAresta > 0){
-            if(d[v] > d[u] + pesoAresta){
+        if (pesoAresta > 0) {
+            if (d[v] > d[u] + pesoAresta) {
                 d[v] = d[u] + pesoAresta;
-                p[u] = u;
+                p[v] = u;
             }
         }
+    }
+
+    public int[] executarDijkstra(Grafo g, int s) {
+        int[] p = new int[g.getVertices()];
+        return executarDijkstra(g, s, p);
+    }
+
+    public int[] executarDijkstra(Grafo g, int s, int[] p) {
+
+        int n = g.getVertices();
+
+        int[] d = new int[n];
+
+        boolean[] aberto = new boolean[n];
+
+        InicializaGrafo init = new InicializaGrafo();
+        init.inicializaD(g, d, p, s);
+
+        for (int i = 0; i < n; i++) {
+            aberto[i] = true;
+        }
+
+        while (existeAberto(aberto)) {
+            int u = menorDist(d, aberto);
+
+            if (u == -1) {
+                break;
+            }
+
+            aberto[u] = false;
+
+            for (int v = 0; v < n; v++) {
+                if (aberto[v] && g.getPeso(u, v) > 0) {
+                    relaxa(g, d, p, u, v);
+                }
+            }
+        }
+        return d;
+    }
+
+    private boolean existeAberto(boolean[] aberto){
+        for (boolean status: aberto){
+            if(status) return true;
+        }
+        return false;
+    }
+
+    private int menorDist(int[] d, boolean[] aberto){
+        int minValor = Integer.MAX_VALUE;
+        int minIndice = -1;
+
+        for(int i =0; i < d.length; i++){
+            if(aberto[i] && d[i] < minValor){
+                minValor = d[i];
+                minIndice = i;
+            }
+        }
+        return minIndice;
     }
 }
